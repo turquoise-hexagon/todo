@@ -4,11 +4,17 @@ todo
 
 usage
 -----
-    $ ./make.sh
-    $ cd bin
-    $ ./todo
+    * program
+        $ ./make.sh
+        $ cd bin
+        $ ./todo
+    * documentation
+        $ cd doc
+        $ ./make.sh
+        $ man ./todo.1.gz
 
 depends on
 ----------
-    * gcc
     * bash
+    * docutils
+    * gcc
