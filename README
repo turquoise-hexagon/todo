@@ -1,0 +1,14 @@
+todo
+====
+    a simple todo-list program
+
+usage
+-----
+    $ ./make.sh
+    $ cd bin
+    $ ./todo
+
+depends on
+----------
+    * gcc
+    * bash
