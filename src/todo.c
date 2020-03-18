@@ -11,7 +11,7 @@
 void
 usage(char *name)
 {
-    fprintf(stderr, "usage : %s <add|del> [string|number]\n", basename(name));
+    fprintf(stderr, "usage : %s [add|del] <string|number>\n", basename(name));
 
     exit(1);
 }
