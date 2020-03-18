@@ -5,10 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "config.h"
 
-void
+static void
 usage(char *name)
 {
     fprintf(stderr, "usage : %s [add|del] <string|number>\n", basename(name));
@@ -25,19 +26,22 @@ main(int argc, char **argv)
     snprintf(todo, sizeof(todo), "%s/.local/share/%s", getenv("HOME"), basename(argv[0]));
 
     switch (argc) {
-        case 1 :
+        case 1 :;
             /* print todo entries, with line numbers */
-            ;
-            unsigned cnt = 0;
-            char input[LINE_MAX];
-
             FILE *file = fopen(todo, "r");
 
             if (file == NULL)
                 errx(1, "failed to open '%s'", todo);
 
+            char *format = isatty(fileno(stdout)) == 1
+                ? "\033[32m%-*d\033[m%s"
+                : "%-*d%s";
+
+            unsigned cnt = 0;
+            char input[LINE_MAX];
+
             while (fgets(input, LINE_MAX, file) != NULL)
-                printf("%-*d%s", PADDING, cnt++, input);
+                printf(format, PADDING, cnt++, input);
 
             fclose(file);
 
