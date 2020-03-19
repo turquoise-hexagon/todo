@@ -33,7 +33,7 @@ main(int argc, char **argv)
             if (file == NULL)
                 errx(1, "failed to open '%s'", todo);
 
-            char *format = isatty(fileno(stdout)) == 1
+            const char *format = isatty(fileno(stdout)) == 1
                 ? "\033[32m%-*d\033[m%s"
                 : "%-*d%s";
 
@@ -63,7 +63,7 @@ main(int argc, char **argv)
                 errno = 0;
                 char *ptr;
 
-                long num = strtol(argv[2], &ptr, 10);
+                const long num = strtol(argv[2], &ptr, 10);
 
                 if (errno != 0 || *ptr != 0 || num < 0)
                     errx(1, "'%s' isn't a valid positive integer", argv[2]);
