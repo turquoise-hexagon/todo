@@ -9,12 +9,23 @@
 
 #include "config.h"
 
+static inline void *
+allocate(unsigned size)
+{
+    void *ptr = malloc(size);
+
+    if (ptr == NULL)
+        errx(EXIT_FAILURE, "failed to allocate memory");
+
+    return ptr;
+}
+
 static void
 usage(char *name)
 {
-    fprintf(stderr, "usage : %s [add|del] <string|number>\n", basename(name));
+    fprintf(stderr, "usage: %s [add|del] <string|number>\n", basename(name));
 
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 static unsigned
@@ -26,26 +37,40 @@ strtous(char *str)
     long tmp = strtol(str, &ptr, 10);
 
     if (errno != 0 || *ptr != 0 || tmp < 0)
-        errx(1, "'%s' isn't a valid positive integer", str);
+        errx(EXIT_FAILURE, "'%s' isn't a valid positive integer", str);
 
     return (unsigned)tmp;
+}
+
+static FILE *
+file_open(const char *name, const char *mode)
+{
+    FILE *tmp = fopen(name, mode);
+
+    if (tmp == NULL)
+        errx(EXIT_FAILURE, "failed to open file '%s'", name);
+
+    return tmp;
+}
+
+static void
+file_close(FILE *file)
+{
+    if (fclose(file) == EOF)
+        errx(EXIT_FAILURE, "failed to close file");
 }
 
 int
 main(int argc, char **argv)
 {
-    /* get path to todo file */
     char todo[256];
 
-    snprintf(todo, sizeof(todo), "%s/.local/share/%s", getenv("HOME"), basename(argv[0]));
+    snprintf(todo, sizeof todo, "%s/.local/share/%s", getenv("HOME"), basename(argv[0]));
 
     switch (argc) {
         case 1 :;
-            /* print todo entries, with line numbers */
-            FILE *file = fopen(todo, "r");
-
-            if (file == NULL)
-                errx(1, "failed to open '%s'", todo);
+            /* print todo-list to stdout */
+            FILE *file = file_open(todo, "r");
 
             const char *format = isatty(fileno(stdout)) == 1
                 ? "\033[32m%-*d\033[m%s"
@@ -57,64 +82,57 @@ main(int argc, char **argv)
             while (fgets(input, LINE_MAX, file) != NULL)
                 printf(format, PADDING, cnt++, input);
 
-            fclose(file);
+            file_close(file);
 
             break;
         case 3 :
-            /* add a new entry to the todo file */
             if (strncmp(argv[1], "add", 4) == 0) {
-                FILE *file = fopen(todo, "a");
-
-                if (file == NULL)
-                    errx(1, "failed to open '%s'", todo);
+                /* add new entry to todo-list */
+                FILE *file = file_open(todo, "a");
 
                 fprintf(file, "%s\n", argv[2]);
 
-                fclose(file);
+                file_close(file);
             }
-            /* delete one entry from the todo file */
             else if (strncmp(argv[1], "del", 4) == 0) {
+                /* remove one entry from todo-list */
                 const unsigned num = strtous(argv[2]);
 
-                FILE *file = fopen(todo, "r");
-
-                if (file == NULL)
-                    errx(1, "failed to open '%s'", todo);
+                FILE *file = file_open(todo, "r");
 
                 unsigned cnt = 0;
-                char **input = malloc((cnt + 1) * sizeof *input);
+                unsigned tmp = 1;
 
-                if (input == NULL)
-                    errx(1, "program failed to allocate memory");
+                char **input = allocate(tmp * sizeof *input);
 
                 for (;;) {
-                    input[cnt] = malloc(LINE_MAX * sizeof *input[cnt]);
-
-                    if (input[cnt] == NULL)
-                        errx(1, "program failed to allocate memory");
+                    input[cnt] = allocate(LINE_MAX * sizeof *input[cnt]);
 
                     if (fgets(input[cnt++], LINE_MAX, file) == NULL)
                         break;
 
-                    input = realloc(input, (cnt + 1) * sizeof *input);
+                    if (cnt == tmp) {
+                        tmp *= 2;
 
-                    if (input == NULL)
-                        errx(1, "program failed to allocate memory");
+                        input = realloc(input, tmp * sizeof *input);
+
+                        if (input == NULL)
+                            errx(EXIT_FAILURE, "failed to allocate memory");
+                    }
                 }
 
-                fclose(file);
+                file_close(file);
 
-                file = fopen(todo, "w");
+                file = file_open(todo, "w");
 
-                for (unsigned i = 0; i < cnt; ++i)
+                for (unsigned i = 0; i < cnt; ++i) {
                     if (i != num)
                         fprintf(file, "%s", input[i]);
 
-                fclose(file);
-
-                for (unsigned i = 0; i < cnt; ++i)
                     free(input[i]);
+                }
 
+                file_close(file);
                 free(input);
             }
             else
@@ -125,5 +143,5 @@ main(int argc, char **argv)
             usage(argv[0]);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
