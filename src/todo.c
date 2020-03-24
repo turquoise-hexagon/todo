@@ -114,12 +114,9 @@ main(int argc, char **argv)
 
                     strncpy(input[cnt++], cur, LINE_MAX);
 
-                    if (cnt == tmp) {
-                        input = realloc(input, (tmp *= 2) * sizeof *input);
-
-                        if (input == NULL)
+                    if (cnt == tmp)
+                        if ((input = realloc(input, (tmp *= 2) * sizeof *input)) == NULL)
                             errx(EXIT_FAILURE, "failed to allocate memory");
-                    }
                 }
 
                 file_close(file);
