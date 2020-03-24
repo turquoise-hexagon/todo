@@ -7,7 +7,7 @@ type gcc &> /dev/null || {
 }
 
 # gcc flags
-CFLAGS+=' -pedantic -Wall -Wextra -static -Ofast -march=native'
+CFLAGS=" -pedantic -Wall -Wextra -static -Ofast -march=native $CFLAGS"
 
 printf -v src src/*.c
 
