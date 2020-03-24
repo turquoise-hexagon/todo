@@ -112,9 +112,9 @@ main(int argc, char **argv)
 
                     input[cnt] = allocate(LINE_MAX * sizeof *input[cnt]);
 
-                    strncpy(input[cnt++], cur, LINE_MAX);
+                    strncpy(input[cnt], cur, LINE_MAX);
 
-                    if (cnt == tmp)
+                    if (++cnt == tmp)
                         if ((input = realloc(input, (tmp *= 2) * sizeof *input)) == NULL)
                             errx(EXIT_FAILURE, "failed to allocate memory");
                 }
