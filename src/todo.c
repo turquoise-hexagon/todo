@@ -100,16 +100,19 @@ main(int argc, char **argv)
 
                 FILE *file = file_open(todo, "r");
 
-                unsigned cnt = 0;
                 unsigned tmp = 1;
+                unsigned cnt = 0;
+                char cur[LINE_MAX];
 
                 char **input = allocate(tmp * sizeof *input);
 
                 for (;;) {
+                    if (fgets(cur, LINE_MAX, file) == NULL)
+                        break;
+
                     input[cnt] = allocate(LINE_MAX * sizeof *input[cnt]);
 
-                    if (fgets(input[cnt++], LINE_MAX, file) == NULL)
-                        break;
+                    strncpy(input[cnt++], cur, LINE_MAX);
 
                     if (cnt == tmp) {
                         tmp *= 2;
@@ -117,7 +120,7 @@ main(int argc, char **argv)
                         input = realloc(input, tmp * sizeof *input);
 
                         if (input == NULL)
-                            errx(EXIT_FAILURE, "failed to allocate memory");
+                            errx(1, "failed to allocate memory");
                     }
                 }
 
@@ -132,8 +135,8 @@ main(int argc, char **argv)
                     free(input[i]);
                 }
 
-                file_close(file);
                 free(input);
+                file_close(file);
             }
             else
                 usage(argv[0]);
