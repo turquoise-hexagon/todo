@@ -10,7 +10,7 @@
 #include "config.h"
 
 static inline void *
-allocate(unsigned size)
+allocate(size_t size)
 {
     void *ptr = malloc(size);
 
