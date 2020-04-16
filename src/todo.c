@@ -68,7 +68,7 @@ main(int argc, char **argv)
     snprintf(todo, sizeof todo, "%s/.local/share/%s", getenv("HOME"), basename(argv[0]));
 
     switch (argc) {
-        case 1 :;
+        case 1:;
             /* print todo-list to stdout */
             FILE *file = file_open(todo, "r");
 
@@ -85,7 +85,7 @@ main(int argc, char **argv)
             file_close(file);
 
             break;
-        case 3 :
+        case 3:
             if (strncmp(argv[1], "add", 4) == 0) {
                 /* add new entry to todo-list */
                 FILE *file = file_open(todo, "a");
@@ -137,7 +137,7 @@ main(int argc, char **argv)
                 usage(argv[0]);
 
             break;
-        default :
+        default:
             usage(argv[0]);
     }
 
