@@ -29,7 +29,7 @@ usage(char *name)
 }
 
 static unsigned
-strtous(char *str)
+strtou(char *str)
 {
     errno = 0;
     char *ptr;
@@ -96,7 +96,7 @@ main(int argc, char **argv)
             }
             else if (strncmp(argv[1], "del", 4) == 0) {
                 /* remove one entry from todo-list */
-                const unsigned num = strtous(argv[2]);
+                const unsigned num = strtou(argv[2]);
 
                 FILE *file = file_open(todo, "r");
 
