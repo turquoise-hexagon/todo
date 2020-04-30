@@ -1,5 +1,4 @@
 /*
- * padding between line number
- * and todo-list item
+ * padding between line number and todo list item
  */
-static const unsigned PADDING = 5;
+const unsigned PADDING = 5;
