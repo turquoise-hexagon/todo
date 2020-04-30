@@ -63,7 +63,7 @@ file_close(FILE *file)
 int
 main(int argc, char **argv)
 {
-    char todo[256];
+    char todo[256] = {0};
 
     snprintf(todo, sizeof todo, "%s/.local/share/%s", getenv("HOME"), basename(argv[0]));
 
