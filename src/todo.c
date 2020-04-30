@@ -54,10 +54,10 @@ file_open(const char *name, const char *mode)
 }
 
 static void
-file_close(FILE *file)
+file_close(FILE *file, const char *name)
 {
     if (fclose(file) == EOF)
-        errx(EXIT_FAILURE, "failed to close file");
+        errx(EXIT_FAILURE, "failed to close '%s'", name);
 }
 
 int
@@ -82,7 +82,7 @@ main(int argc, char **argv)
             while (fgets(input, LINE_MAX, file) != NULL)
                 printf(format, PADDING, cnt++, input);
 
-            file_close(file);
+            file_close(file, todo);
 
             break;
         case 3:
@@ -92,7 +92,7 @@ main(int argc, char **argv)
 
                 fprintf(file, "%s\n", argv[2]);
 
-                file_close(file);
+                file_close(file, todo);
             }
             else if (strncmp(argv[1], "del", 4) == 0) {
                 /* remove one entry from todo-list */
@@ -119,7 +119,7 @@ main(int argc, char **argv)
                             errx(EXIT_FAILURE, "failed to allocate memory");
                 }
 
-                file_close(file);
+                file_close(file, todo);
 
                 file = file_open(todo, "w");
 
@@ -131,7 +131,7 @@ main(int argc, char **argv)
                 }
 
                 free(input);
-                file_close(file);
+                file_close(file, todo);
             }
             else
                 usage(argv[0]);
