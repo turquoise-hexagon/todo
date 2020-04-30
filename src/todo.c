@@ -31,12 +31,12 @@ get_num(const char *str)
     errno = 0;
     char *ptr;
 
-    long tmp = strtol(str, &ptr, 10);
+    long num = strtol(str, &ptr, 10);
 
-    if (errno != 0 || *ptr != 0 || tmp < 0)
+    if (errno != 0 || *ptr != 0 || num < 0)
         errx(EXIT_FAILURE, "'%s' isn't a valid positive integer", str);
 
-    return tmp;
+    return num;
 }
 
 static FILE *
@@ -60,12 +60,12 @@ close_file(const char *path, FILE *file)
 static inline void *
 allocate(size_t size)
 {
-    void *res = malloc(size);
+    void *ptr = malloc(size);
 
-    if (res == NULL)
+    if (ptr == NULL)
         errx(EXIT_FAILURE, "failed to allocate memory");
 
-    return res;
+    return ptr;
 }
 
 static void
