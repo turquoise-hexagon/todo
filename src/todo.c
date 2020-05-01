@@ -16,9 +16,9 @@ usage(char *name)
         stderr,
         "usage : %s [option] <parameter>\n\n"
         "options : \n"
-        "    add <string>     create a new entry for <string> in todo list\n"
-        "    del <number>     delete entry corresponding to <number> from todo list\n\n"
-        "when not provided with any option, the todo list is printed to stdout\n",
+        "    add <string>     create a new entry for <string> in todo-list\n"
+        "    del <number>     delete entry corresponding to <number> from todo-list\n\n"
+        "when not provided with any option, the todo-list is printed to stdout\n",
         basename(name)
     );
 

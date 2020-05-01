@@ -2,7 +2,7 @@
 todo
 ----
 
-a simple todo list program
+a simple todo-list program
 ==========================
 
 :date: March 2020
@@ -17,18 +17,18 @@ synopsis
 
 description
 -----------
-todo stores, displays and manages a simple plain text, line separated todo list
+todo stores, displays and manages a simple plain text, line separated todo-list
 
 it aims at being minimalist, fast and easy to use / script
 
 options
 -------
 ``add <string>``
-    create a new entry for <string> in todo list
+    create a new entry for <string> in todo-list
 ``del <number>``
-    delete entry corresponding to <number> from todo list
+    delete entry corresponding to <number> from todo-list
 
-when not provided with any option, the todo list is printed to stdout
+when not provided with any option, the todo-list is printed to stdout
 
 example
 -------
