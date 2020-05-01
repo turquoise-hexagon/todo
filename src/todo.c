@@ -118,7 +118,7 @@ delete(const char *path, const char *str)
         content[cnt] = allocate(LINE_MAX * sizeof *content[cnt]);
 
         strncpy(content[cnt], input, LINE_MAX);
-        
+
         /* allocate more memory if needed */
         if (++cnt == tmp)
             if ((content = realloc(content, (tmp *= 2) * sizeof *content)) == NULL)
