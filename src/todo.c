@@ -109,19 +109,19 @@ delete(const char *path, const char *str)
     unsigned cnt = 0;
     char input[LINE_MAX];
 
-    char **content = allocate(tmp * sizeof *content);
+    char **content = allocate(tmp * sizeof(*content));
 
     for (;;) {
         if (fgets(input, LINE_MAX, file) == NULL)
             break;
 
-        content[cnt] = allocate(LINE_MAX * sizeof *content[cnt]);
+        content[cnt] = allocate(LINE_MAX * sizeof(*content[cnt]));
 
         strncpy(content[cnt], input, LINE_MAX);
 
         /* allocate more memory if needed */
         if (++cnt == tmp)
-            if ((content = realloc(content, (tmp *= 2) * sizeof *content)) == NULL)
+            if ((content = realloc(content, (tmp *= 2) * sizeof(*content))) == NULL)
                 errx(EXIT_FAILURE, "failed to allocate memory");
     }
 
@@ -146,7 +146,7 @@ main(int argc, char **argv)
     /* obtain path to todo file */
     char path[256] = {0};
 
-    if (snprintf(path, sizeof path, "%s/.local/share/todo", getenv("HOME")) < 0)
+    if (snprintf(path, sizeof(path), "%s/.local/share/todo", getenv("HOME")) < 0)
         errx(EXIT_FAILURE, "failed to create path to todo file");
 
     /* parse options */
