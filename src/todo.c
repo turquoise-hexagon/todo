@@ -144,7 +144,7 @@ int
 main(int argc, char **argv)
 {
     /* obtain path to todo file */
-    char path[256] = {0};
+    char path[PATH_MAX] = {0};
 
     if (snprintf(path, sizeof(path), "%s/.local/share/todo", getenv("HOME")) < 0)
         errx(EXIT_FAILURE, "failed to create path to todo file");
