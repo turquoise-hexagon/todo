@@ -12,7 +12,7 @@ a simple todo-list program
 
 synopsis
 --------
-| todo `[option]` <parameter>
+| todo [-a `<string>`] [-d `<number>`]
 | todo
 
 description
@@ -23,22 +23,19 @@ it aims at being minimalist, fast and easy to use / script
 
 options
 -------
-``add <string>``
+-a `<string>`
     create a new entry for <string> in todo-list
-``del <number>``
+-d `<number>`
     delete entry corresponding to <number> from todo-list
-
-when not provided with any option, the todo-list is printed to stdout
 
 example
 -------
 ::
 
-    $ todo add "hello"
-    $ todo add "world"
-    $ todo
+    $ todo -a 'hello'
+    0    hello
+    $ todo -a 'world'
     0    hello
     1    world
-    $ todo del 0
-    $ todo
+    $ todo -d 0
     0    world
