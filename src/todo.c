@@ -1,16 +1,16 @@
 #include <err.h>
-#include <errno.h>
-#include <libgen.h>
 #include <limits.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <libgen.h>
 
 #include "config.h"
 
 static void
-usage(char *name)
+print_usage(char *program_name)
 {
     fprintf(
         stderr,
@@ -19,24 +19,38 @@ usage(char *name)
         "    add <string>     create a new entry for <string> in todo-list\n"
         "    del <number>     delete entry corresponding to <number> from todo-list\n\n"
         "when not provided with any option, the todo-list is printed to stdout\n",
-        basename(name)
+        basename(program_name)
     );
 
     exit(EXIT_FAILURE);
 }
 
+/*
+ * helper functions
+ */
+static inline void *
+allocate(size_t size)
+{
+    void *ptr = malloc(size);
+
+    if (ptr == NULL)
+        errx(EXIT_FAILURE, "failed to allocate memory");
+
+    return ptr;
+}
+
 static unsigned
-get_num(const char *str)
+convert_to_number(const char *str)
 {
     errno = 0;
     char *ptr;
 
-    long num = strtol(str, &ptr, 10);
+    long number = strtol(str, &ptr, 10);
 
-    if (errno != 0 || *ptr != 0 || num < 0)
+    if (errno != 0 || *ptr != 0 || number < 0)
         errx(EXIT_FAILURE, "'%s' isn't a valid positive integer", str);
 
-    return num;
+    return number;
 }
 
 static FILE *
@@ -57,19 +71,11 @@ close_file(const char *path, FILE *file)
         errx(EXIT_FAILURE, "failed to close '%s'", path);
 }
 
-static inline void *
-allocate(size_t size)
-{
-    void *ptr = malloc(size);
-
-    if (ptr == NULL)
-        errx(EXIT_FAILURE, "failed to allocate memory");
-
-    return ptr;
-}
-
+/*
+ * main functions
+ */
 static void
-print(const char *path)
+todo_print(const char *path)
 {
     FILE *file = open_file(path, "r");
 
@@ -79,16 +85,16 @@ print(const char *path)
         : "%-*u%s";
 
     unsigned cnt = 0;
-    char input[LINE_MAX];
+    char line[LINE_MAX] = {0};
 
-    while (fgets(input, LINE_MAX, file) != NULL)
-        printf(format, PADDING, cnt++, input);
+    while (fgets(line, LINE_MAX, file) != NULL)
+        printf(format, PADDING, cnt++, line);
 
     close_file(path, file);
 }
 
 static void
-append(const char *path, const char *str)
+todo_append(const char *path, const char *str)
 {
     FILE *file = open_file(path, "a");
 
@@ -99,71 +105,74 @@ append(const char *path, const char *str)
 }
 
 static void
-delete(const char *path, const char *str)
+todo_delete(const char *path, const char *str)
 {
-    const unsigned num = get_num(str);
+    const unsigned number = convert_to_number(str);
 
     FILE *file = open_file(path, "r");
 
-    unsigned tmp = 1;
-    unsigned cnt = 0;
-    char input[LINE_MAX];
+    char line[LINE_MAX] = {0};
 
-    char **content = allocate(tmp * sizeof(*content));
+    size_t number_lines = 0;
+    size_t allocated_lines = 1;
 
+    char **file_content = allocate(allocated_lines * sizeof(*file_content));
+
+    /* load file in memory */
     for (;;) {
-        if (fgets(input, LINE_MAX, file) == NULL)
+        if (fgets(line, LINE_MAX, file) == NULL)
             break;
 
-        content[cnt] = allocate(LINE_MAX * sizeof(*content[cnt]));
+        file_content[number_lines] = allocate(LINE_MAX \
+            * sizeof(*file_content[number_lines]));
 
-        strncpy(content[cnt], input, LINE_MAX);
+        strncpy(file_content[number_lines], line, LINE_MAX);
 
-        /* allocate more memory if needed */
-        if (++cnt == tmp)
-            if ((content = realloc(content, (tmp *= 2) * sizeof(*content))) == NULL)
+        if (++number_lines == allocated_lines)
+            if ((file_content = realloc(file_content, \
+                    (allocated_lines *= 2) * sizeof(*file_content))) == NULL)
                 errx(EXIT_FAILURE, "failed to allocate memory");
     }
 
     close_file(path, file);
     file = open_file(path, "w");
 
-    for (unsigned i = 0; i < cnt; ++i) {
-        if (i != num)
-            if (fprintf(file, "%s", content[i]) < 0)
-                errx(EXIT_FAILURE, "failed to write to '%s'", path);
+    for (size_t i = 0; i < number_lines; ++i) {
+        if (i != number)
+            if (fprintf(file, "%s", file_content[i]) < 0)
+                errx(EXIT_FAILURE, "failed to write '%s'", path);
 
-        free(content[i]);
+        free(file_content[i]);
     }
 
-    free(content);
+    free(file_content);
     close_file(path, file);
 }
 
 int
 main(int argc, char **argv)
 {
-    /* obtain path to todo file */
-    char path[PATH_MAX] = {0};
+    char todo_path[PATH_MAX] = {0};
 
-    if (snprintf(path, sizeof(path), "%s/.local/share/todo", getenv("HOME")) < 0)
+    if (snprintf(todo_path, sizeof(todo_path), \
+            "%s/.local/share/todo", getenv("HOME")) < 0)
         errx(EXIT_FAILURE, "failed to create path to todo file");
 
-    /* parse options */
+    /* argument parsing */
     switch (argc) {
         case 1:
-            print(path);
+            todo_print(todo_path);
 
             break;
         case 3:
-            if      (strncmp(argv[1], "add", 4) == 0) append(path, argv[2]);
-            else if (strncmp(argv[1], "del", 4) == 0) delete(path, argv[2]);
+            if      (strncmp(argv[1], "add", 4) == 0) todo_append(todo_path, argv[2]);
+            else if (strncmp(argv[1], "del", 4) == 0) todo_delete(todo_path, argv[2]);
             else
-                usage(argv[0]);
+                print_usage(argv[0]);
 
             break;
-        default :
-            usage(argv[0]);
+        default:
+            print_usage(argv[0]);
     }
 
     return EXIT_SUCCESS;
