@@ -45,9 +45,7 @@ convert_to_number(const char *str)
     char *ptr;
     long number;
 
-    number = strtol(str, &ptr, 10);
-
-    if (errno != 0 || *ptr != 0 || number < 0)
+    if ((number = strtol(str, &ptr, 10)) < 0 || errno != 0 || *ptr != 0)
         errx(1, "'%s' isn't a valid positive integer", str);
 
     return (unsigned)number;
