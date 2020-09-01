@@ -24,9 +24,9 @@ it aims at being minimalist, fast and easy to use / script
 options
 -------
 -a `<string>`
-    create a new entry for <string> in todo-list
+    add <string> to todo-list
 -d `<number>`
-    delete entry corresponding to <number> from todo-list
+    delete <number>th entry from todo-list
 
 example
 -------
