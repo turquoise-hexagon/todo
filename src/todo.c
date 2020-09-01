@@ -155,7 +155,7 @@ static void
 todo_print(const char *path)
 {
     FILE *file;
-    
+
     file = open_file(path, "r");
 
     {
