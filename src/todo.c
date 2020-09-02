@@ -99,20 +99,20 @@ close_file(const char *path, FILE *file)
 static char *
 copy_input(const char *str)
 {
-    char *copy;
+    char *cpy;
 
     {
         size_t len;
 
         len = strnlen(str, LINE_MAX);
-        copy = allocate(len * sizeof(*copy));
-        strncpy(copy, str, len);
+        cpy = allocate(len * sizeof(*cpy));
+        strncpy(cpy, str, len);
 
         /* fix string */
-        copy[len - 1] = 0;
+        cpy[len - 1] = 0;
     }
 
-    return copy;
+    return cpy;
 }
 
 static char **
