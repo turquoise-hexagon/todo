@@ -12,7 +12,7 @@ a simple todo-list program
 
 synopsis
 --------
-| todo [-a `<string>`] [-d `<number>`]
+| todo [-a `<string>`] [-d `<number>`] [-e `<number>` `<string>`]
 | todo
 
 description
@@ -24,18 +24,23 @@ it aims at being minimalist, fast and easy to use / script
 options
 -------
 -a `<string>`
-    add <string> to todo-list
+    add <string> to todo-list\n"
 -d `<number>`
-    delete <number>th entry from todo-list
+    delete <number>th entry from todo-list\n"
+-e `<number>` `<string>`
+    replace <number>th entry with <string>\n",
 
 example
 -------
 ::
 
-    $ todo -a 'hello'
-    0    hello
-    $ todo -a 'world'
-    0    hello
-    1    world
+    $ todo -a 'a'
+    0    a
+    $ todo -a 'c'
+    0    a
+    1    c
+    $ todo -e 1 'b'
+    0    a
+    1    b
     $ todo -d 0
-    0    world
+    0    b
