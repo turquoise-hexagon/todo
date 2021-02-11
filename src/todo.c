@@ -88,25 +88,6 @@ close_todo(FILE *file)
         ERROR(1, "error : failed to close '%s'\n", todo_path)
 }
 
-static char *
-copy_input(const char *str)
-{
-    char *cpy;
-
-    {
-        size_t len;
-
-        len = strnlen(str, LINE_MAX);
-        cpy = allocate(len * sizeof(*cpy));
-        strncpy(cpy, str, len);
-
-        /* fix string */
-        cpy[len - 1] = 0;
-    }
-
-    return cpy;
-}
-
 static char **
 load_todo(size_t *size)
 {
@@ -125,7 +106,12 @@ load_todo(size_t *size)
         char input[LINE_MAX] = {0};
 
         while (fgets(input, LINE_MAX, file)) {
-            content[assigned] = copy_input(input);
+            size_t length = strnlen(input, LINE_MAX);
+
+            /* fix string */
+            input[length - 1] = 0;
+
+            content[assigned] = strndup(input, length);
 
             if (++assigned == allocated)
                 content = reallocate(content,
