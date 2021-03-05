@@ -19,7 +19,7 @@ static char todo_path[PATH_MAX] = {0};
 }
 
 static noreturn void
-usage(const char *name)
+usage(char *name)
 {
     ERROR(
         1,
@@ -29,7 +29,7 @@ usage(const char *name)
         "    -a <string>             add <string> to todo-list\n"
         "    -d <number>             delete <number>th entry from todo-list\n"
         "    -e <number> <string>    replace <number>th entry with <string>\n",
-        name)
+        basename(name))
 }
 
 static inline void *
@@ -242,8 +242,6 @@ edit_todo(size_t index, const char *str)
 int
 main(int argc, char **argv)
 {
-    const char *name = basename(argv[0]);
-
     {
         char *home;
 
@@ -266,7 +264,7 @@ main(int argc, char **argv)
                 break;
             case 'e':
                 if (optind < argc - 2)
-                    usage(name);
+                    usage(argv[0]);
 
                 edit_todo(convert_to_number(argv[optind]), argv[optind + 1]);
 
@@ -274,13 +272,13 @@ main(int argc, char **argv)
 
                 break;
             default :
-                usage(name);
+                usage(argv[0]);
         }
 
     print_todo();
 
     if (optind < argc)
-        usage(name);
+        usage(argv[0]);
 
     return 0;
 }
